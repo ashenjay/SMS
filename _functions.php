@@ -9,9 +9,9 @@ getDBConnection();
 
 function getDBConnection() {
     /**/
-    $servername = "localhost";
+    $servername = "db";
     $username = "root";
-    $password = "";
+    $password = "LKJlkj123@@";
     $db = "aspms_db";
 
 
