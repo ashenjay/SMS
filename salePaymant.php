@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<?php
+session_start();
+
+include './_functions.php';
+$_SESSION['print_cart_items'] = "";
+?>
+<html>
+    <head>
+        <title>SMS</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="keywords" content="" />
+        <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+        <!-- Bootstrap Core CSS -->
+        <link href="css/bootstrap.min.css" rel='stylesheet' type='text/css' />
+        <!-- Custom CSS -->
+        <link href="css/style.css" rel='stylesheet' type='text/css' />
+        <!-- Graph CSS -->
+        <link href="css/font-awesome.css" rel="stylesheet"> 
+        <!-- jQuery -->
+        <!-- lined-icons -->
+        <link rel="stylesheet" href="css/icon-font.min.css" type='text/css' />
+        <!-- //lined-icons -->
+
+
+
+        <!--datatable-->
+        <script src="js/jquery-1.12.4.js" type="text/javascript"></script>
+        <script src="js/jquery.dataTables.min.js" type="text/javascript"></script>
+        <link href="css/jquery.dataTables.min.css" rel="stylesheet" type="text/css"/>
+        <style type="text/css">
+            body,td,th {
+                font-family: Roboto, sans-serif;
+                font-size: small;
+            }
+        </style>
+        <script type="text/javascript">
+
+            $(document).ready(function () {
+                $('#example').DataTable();
+            });
+
+
+
+
+
+            function PrintElem(elem)
+            {
+                var mywindow = window.open('', 'PRINT', 'height=400,width=600');
+
+
+                mywindow.document.write('<html><head><title>' + document.title + '</title>');
+
+                mywindow.document.write('</head><body >');
+                mywindow.document.write('<h1>' + document.title + '</h1>');
+                mywindow.document.write(document.getElementById(elem).innerHTML);
+                mywindow.document.write('</body></html>');
+
+                mywindow.document.close(); // necessary for IE >= 10
+                mywindow.focus(); // necessary for IE >= 10*/
+
+                mywindow.print();
+                mywindow.close();
+
+                return true;
+
+            }
+
+        </script>
+    </head>
+    <body>
+        <div class="page-container">
+            <!--/content-inner-->
+            <div class="left-content">
+                <div class="inner-content">
+                    <!-- header-starts -->
+                    <div class="header-section">
+
+                    </div>
+                    <!-- //header-ends -->
+                    <div class="outter-wp" id="containerDiv">
+
+                        <div class="row">
+                            <table border="0" width='100%'>
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 80%"></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+
+                            <?php
+                            if ($_POST['btnPayment']) {
+                                $customerName = $_POST['customerName'];
+                                $totalAmount = $_SESSION['total_price'];
+
+                                if ($_POST['mode'] == 'CASH') { // cash payment 
+                                    $last_id = setCashSales();
+
+                                    if ($last_id > 0) {
+                                        ?>
+
+
+                                        <div id="printDiv">
+                                            <table width="80%" border="0" align="center">
+                                                <tr>
+                                                    <td colspan="2"><strong>SMS</strong><hr></td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="8%">Bill No</td>
+                                                    <td width="92%"><?php echo $last_id ?></td>
+                                                </tr>
+                                                <tr>
+                                                  <td>Customer</td>
+                                                  <td><?php echo $customerName ?></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Bill Date</td>
+                                                    <td><?php
+                                                        echo date("Y-m-d h:i");
+                                                        ?></td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="2">
+
+                                                        <?php
+                                                        $_SESSION['print_cart_items'] = $_SESSION['cart_items'];
+                                                        $_SESSION['print_total_price'] = $_SESSION['total_price'];
+                                                        ?>
+
+
+                                                        <table width="100%" border="1" cellspacing="0" cellpadding="0">
+                                                            <tr>
+                                                                <td><strong>Item</strong></td>
+                                                                <td><strong>Qty</strong></td>
+                                                                <td><strong>Price</strong></td>
+                                                                <td><strong>Total</strong></td>
+                                                                <td>&nbsp;</td>
+                                                            </tr>
+
+                                                            <?php
+                                                            $itemArray = $_SESSION['print_cart_items'];
+                                                            $itemArraylength = count($itemArray);
+
+                                                            for ($x = 0; $x < $itemArraylength; $x++) {
+                                                                ?>
+                                                                <tr>
+                                                                    <td><?php echo $itemArray[$x]["name"]; ?></td>
+                                                                    <td><?php echo $itemArray[$x]["qty"]; ?></td>
+                                                                    <td><?php echo $itemArray[$x]["price"]; ?></td>
+                                                                    <td><?php echo $itemArray[$x]["price"] * $itemArray[$x]["qty"]; ?></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                <?php
+                                                            }
+                                                            ?>
+                                                            <tr>
+                                                                <td>&nbsp;</td>
+                                                                <td>&nbsp;</td>
+                                                                <td>&nbsp;</td>
+                                                                <td>Subtotal</td>
+                                                                <td><?php
+                                                                    echo $_SESSION['print_total_price'];
+                                                                    ?></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>&nbsp;</td>
+                                                                <td>&nbsp;</td>
+                                                                <td>&nbsp;</td>
+                                                                <td></td>
+                                                                <td>&nbsp;</td>
+                                                            </tr>
+
+                                                        </table>
+
+
+
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>&nbsp;</td>
+                                                    <td>&nbsp;</td>
+                                                </tr>
+                                            </table>
+                                          <p> <button onClick="PrintElem('printDiv')"> Print </button></p>
+                                        </div>
+                                        <?php
+                                        unset($_SESSION['cart_items']);
+                                        unset($_SESSION['total_price']);
+                                    } else {
+                                        echo 'sorry, please try again';
+                                    }
+                                } else if ($_POST['mode'] == 'CHEQUE') { // cheque payment 
+                                    $last_id = setChequeSales();
+                                    if ($last_id > 0) {
+                                        ?>
+
+                                       <div id="printDiv">
+                                            <table width="80%" border="0" align="center">
+                                                <tr>
+                                                    <td colspan="2"><strong>SMS</strong><hr></td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="8%">Bill No</td>
+                                                    <td width="92%"><?php echo $last_id ?></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Bill Date</td>
+                                                    <td><?php
+                                                        echo date("Y-m-d h:i");
+                                                        ?></td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="2">
+
+                                                        <?php
+                                                        $_SESSION['print_cart_items'] = $_SESSION['cart_items'];
+                                                        $_SESSION['print_total_price'] = $_SESSION['total_price'];
+                                                        ?>
+
+
+                                                        <table width="100%" border="1" cellspacing="0" cellpadding="0">
+                                                            <tr>
+                                                                <td><strong>Item</strong></td>
+                                                                <td><strong>Qty</strong></td>
+                                                                <td><strong>Price</strong></td>
+                                                                <td><strong>Total</strong></td>
+                                                                <td>&nbsp;</td>
+                                                            </tr>
+
+                                                            <?php
+                                                            $itemArray = $_SESSION['print_cart_items'];
+                                                            $itemArraylength = count($itemArray);
+
+                                                            for ($x = 0; $x < $itemArraylength; $x++) {
+                                                                ?>
+                                                                <tr>
+                                                                    <td><?php echo $itemArray[$x]["name"]; ?></td>
+                                                                    <td><?php echo $itemArray[$x]["qty"]; ?></td>
+                                                                    <td><?php echo $itemArray[$x]["price"]; ?></td>
+                                                                    <td><?php echo $itemArray[$x]["price"] * $itemArray[$x]["qty"]; ?></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                <?php
+                                                            }
+                                                            ?>
+                                                            <tr>
+                                                                <td>&nbsp;</td>
+                                                                <td>&nbsp;</td>
+                                                                <td>&nbsp;</td>
+                                                                <td>Subtotal</td>
+                                                                <td><?php
+                                                                    echo $_SESSION['print_total_price'];
+                                                                    ?></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>&nbsp;</td>
+                                                                <td>&nbsp;</td>
+                                                                <td>&nbsp;</td>
+                                                                <td></td>
+                                                                <td>&nbsp;</td>
+                                                            </tr>
+
+                                                        </table>
+
+
+
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>&nbsp;</td>
+                                                    <td>&nbsp;</td>
+                                                </tr>
+                                            </table>
+                                            <p> <button onClick="PrintElem('printDiv')"> Print </button></p>
+                                        </div>
+
+                                        <?php
+                                        unset($_SESSION['cart_items']);
+                                        unset($_SESSION['total_price']);
+                                    } else {
+                                        echo 'sorry, please try again';
+                                    }
+                                }
+                            }
+
+                            function setCashSales() {
+                                $last_id = 0;
+                                $conn = getDBConnection();
+
+                                if (!$conn) {
+                                    die("Connection failed: " . mysqli_connect_error());
+                                }
+
+                                $sql = " INSERT INTO sales
+            (`amount`,
+             `customer`,
+             `mode`,
+             `status`,
+             `createduser`)
+VALUES ('" . $_SESSION['total_price'] . "',
+        '" . $_POST['customerName'] . "',
+        'CASH',
+        'CMP',
+        '1'); ";
+
+                                if (mysqli_query($conn, $sql)) {
+                                    $saleNo = mysqli_insert_id($conn);
+                                    echo '<p class="bg-success">Payment successful Bill No: ' . $saleNo . '</p>';
+//                                    echo "Payment successfully case: " . $saleNo;
+                                    setSalesItems($conn, $saleNo);
+                                } else {
+                                    echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+                                }
+
+                                mysqli_close($conn);
+                                return $saleNo;
+                            }
+
+                            function setChequeSales() {
+                                $last_id = 0;
+                                $conn = getDBConnection();
+
+                                if (!$conn) {
+                                    die("Connection failed: " . mysqli_connect_error());
+                                }
+
+                                $sql = " INSERT INTO sales
+            (`amount`,
+             `customer`,
+             `mode`,
+             `realize_date`,
+             `cheque_no`,
+             `bank_branch`,
+             `status`,
+             `createduser`)
+VALUES ('" . $_SESSION['total_price'] . "',
+        '" . $_POST['customerName'] . "',
+        'CHEQUE',
+        '" . $_POST['realizeDate'] . "',
+        '" . $_POST['chequeNo'] . "',
+        '" . $_POST['bankBranch'] . "',
+        'PND',
+        '1'); ";
+
+                                if (mysqli_query($conn, $sql)) {
+                                    $saleNo = mysqli_insert_id($conn);
+                                    echo '<p class="bg-success">Payment successful Bill No: ' . $saleNo . '</p>';
+                                    setSalesItems($conn, $saleNo);
+                                } else {
+                                    echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+                                }
+
+                                mysqli_close($conn);
+                                return $saleNo;
+                            }
+
+                            function setSalesItems($conn, $saleNo) {
+//                                echo 'setSalesItems';
+                                $itemArray = $_SESSION['cart_items'];
+                                $itemArraylength = count($itemArray);
+
+                                for ($x = 0; $x < $itemArraylength; $x++) {
+                                    if (!$conn) {
+                                        die("Connection failed: " . mysqli_connect_error());
+                                    }
+
+                                    $sql = " INSERT INTO saleitem
+                                            (`saleno`,
+                                             `itemid`,
+                                             `qty`,
+                                             `itemprice`,
+                                             `ttlprice`)
+                                VALUES ('$saleNo',
+                                        '" . $itemArray[$x]["itemID"] . "',
+                                        '" . $itemArray[$x]["qty"] . "', 
+                                        '" . $itemArray[$x]["price"] . "', 
+                                        '" . $itemArray[$x]["price"] * $itemArray[$x]["qty"] . "') ";
+
+                                    if (mysqli_query($conn, $sql)) {
+//                                        echo "New record created successfully";
+                                        updateItemStock($conn, $itemArray[$x]["itemID"], $itemArray[$x]["qty"]);
+                                    } else {
+                                        echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+                                    }
+                                }//for loop
+//                                mysqli_close($conn);
+                            }
+
+                            function updateItemStock($conn, $id, $qty) {
+//                                echo ' - updateItemStock -';
+                                if (!$conn) {
+                                    die("Connection failed: " . mysqli_connect_error());
+                                }
+                                $sql = "SELECT stock FROM item WHERE id = $id";
+                                $result = mysqli_query($conn, $sql);
+
+                                if (mysqli_num_rows($result) > 0) {
+                                    // output data of each row
+                                    while ($row = mysqli_fetch_assoc($result)) {
+                                        $newStock = $row["stock"] - $qty;
+                                        setNewItemStock($conn, $id, $newStock);
+                                    }
+                                } else {
+                                    echo "0 results";
+                                }
+                            }
+
+                            function setNewItemStock($conn, $id, $newStock) {
+//                                echo ' - setNewItemStock - ';
+                                if (!$conn) {
+                                    die("Connection failed: " . mysqli_connect_error());
+                                }
+                                $sql = "UPDATE item SET stock = '" . $newStock . "' WHERE id = $id";
+//                                echo 'sql' . $sql;
+                                mysqli_query($conn, $sql);
+                            }
+                            ?>
+
+
+
+                        </div>
+
+                        <div class="row">
+
+
+                        </div>
+
+
+
+
+
+
+
+                        <!--//outer-wp-->
+                    </div>
+                    <!--footer section start-->
+                    <footer>
+                        <p> &copy 2017 SMS. All Rights Reserved | Design for <a href="#" target="_blank">SMS </a></p>
+                    </footer>
+                    <!--footer section end-->
+                </div>
+            </div>
+            <!--//content-inner-->
+            <!--/sidebar-menu-->
+            <div class="sidebar-menu"> 
+                <header class="logo">
+                    <a href="#" class="sidebar-icon"> <span class="fa fa-bars"></span> </a> <a href="index.html"> <span id="logo"> <h1> <img src="images/sms_logo.jpg" width="50" height="50" >SMS</h1></span> 
+                        <!--<img id="logo" src="" alt="Logo"/>--> 
+                    </a> 
+                </header>
+                <div style="border-top:1px solid rgba(69, 74, 84, 0.7)"></div>
+                <!--/down-->
+                <div class="down">	
+<?php include './profile.php'; ?>
+                </div>
+                <!--//down-->
+                <div class="menu">
+<?php include './menu.php'; ?>
+                </div>
+            </div>
+            <div class="clearfix"></div>		
+        </div>
+        <script>
+            var toggle = true;
+
+            $(".sidebar-icon").click(function () {
+                if (toggle)
+                {
+                    $(".page-container").addClass("sidebar-collapsed").removeClass("sidebar-collapsed-back");
+                    $("#menu span").css({"position": "absolute"});
+                } else
+                {
+                    $(".page-container").removeClass("sidebar-collapsed").addClass("sidebar-collapsed-back");
+                    setTimeout(function () {
+                        $("#menu span").css({"position": "relative"});
+                    }, 400);
+                }
+
+                toggle = !toggle;
+            });
+        </script>
+
+
+        <!-- Bootstrap Core JavaScript -->
+        <script src="js/bootstrap.min.js"></script>
+
+
+        <style type="text/css">
+            #containerDiv{
+                margin-left: 20px;
+            }
+        </style>
+    </body>
+</html>
